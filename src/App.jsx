@@ -42,13 +42,13 @@ function ToggleButton({ themeNumber }) {
     <section className='flex items-center gap-6 h-full relative font-semibold'>
       <h3 className='text-[15px]'>theme</h3>
       <div>
-        {/* <div className='flex justify-between px-2 absolute bottom-6 w-[50%]'>
+        <div className='flex justify-between px-2 absolute bottom-10 w-[50%]'>
           {themeNumber.map((value, index) => (
             <h1 key={index} className='text-[12px]'>
               {value}
             </h1>
           ))}
-        </div> */}
+        </div>
         <div className='bg-[#182034] px-1 py-[3px] rounded-2xl w-16 h-[22px] flex items-center justify-between'>
           {themeNumber.map((value, index) => (
             <span
@@ -73,32 +73,67 @@ function Display() {
   );
 }
 
+const DataButtons = {
+  NumberedButtons: [7, 8, 9, 6, 5, 4, 3, 2, 1, '.', 0, '/'],
+  OperationButtons: ['C', '+', '-', 'x'],
+  AdditionalButtons: ['Reset', '='],
+};
 function Board() {
   return (
     <div
       style={{
         backgroundColor: '#182034',
         marginTop: '20px',
-        height: '400px',
+        height: '420px',
         width: '500px',
         borderRadius: '8px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '16px',
+        padding: '20px 0px',
       }}
     >
-      <div className='flex flex-wrap justify-evenly px-2 py-5'>
-        <Button value={7} />
-        <Button value={8} />
-        <Button value={9} />
-        <Button value='DEL' backgroundColor='#637097' color='#ffffff' />
+      <div className='flex justify-center w-full'>
+        <div className='grid grid-cols-3 gap-4 px-2'>
+          {DataButtons.NumberedButtons.map((value, index) => (
+            <Button value={value} key={index} width='100px' />
+          ))}
+        </div>
+        <div className='grid grid-cols-1 gap-4 px-2'>
+          {DataButtons.OperationButtons.map((value, index) => (
+            <Button
+              value={value}
+              key={index}
+              backgroundColor={index === 0 ? '#637097' : ''}
+              color={index === 0 ? '#ffffff' : ''}
+              width='100px'
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4 px-2'>
+        {DataButtons.AdditionalButtons.map((value, index) => (
+          <Button
+            value={value}
+            key={index}
+            backgroundColor={index === 0 ? '#637097' : '#d03f2f'}
+            color='#ffffff'
+            width='215px'
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-function Button({ value, backgroundColor, color }) {
+function Button({ value, backgroundColor, color, width }) {
   return (
     <button
-      style={{ backgroundColor: backgroundColor, color: color }}
-      className='flex items-center justify-center h-[60px] w-[100px] rounded-[6px] bg-[#eae3dc] font-lage font-bold text-[28px] border-b-[5px] border-opacity-30 border-black pt-2'
+      style={{ backgroundColor: backgroundColor, color: color, width: width }}
+      className='flex items-center justify-center h-[60px] rounded-[6px] bg-[#eae3dc] font-lage font-bold text-[28px] border-b-[4px] border-opacity-20 border-black pt-2'
     >
       {value}
     </button>
