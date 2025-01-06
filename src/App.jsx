@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import Data from './data/application.json';
 
 const App = () => {
+  const [displayValue, setDisplayValue] = useState(3991);
+
+  const handleClearDisplayValue = () => {
+    setDisplayValue(0);
+  };
+
+  const handleNumberClick = (number) => {
+    console.log('Number clicked');
+    if (displayValue === 0) {
+      setDisplayValue(number);
+    } else {
+      setDisplayValue(`${displayValue}${number}`);
+    }
+  };
+
   return (
     <div
       style={{
@@ -15,18 +30,23 @@ const App = () => {
       }}
       className='font-lage'
     >
-      <CalculatorHeader />
-      <Display />
-      <Board />
+      <CalculatorHeader>
+        <ToggleButton themeNumber={[1, 2, 3]} />
+      </CalculatorHeader>
+      <Display value={displayValue} />
+      <Board
+        clear={handleClearDisplayValue}
+        displayNumber={handleNumberClick}
+      />
     </div>
   );
 };
 
-function CalculatorHeader() {
+function CalculatorHeader({ children }) {
   return (
     <div className='text-[#ffffff] font-bold text-[28px] w-[500px] flex justify-between items-center'>
       <h1>{Data.title}</h1>
-      <ToggleButton themeNumber={[1, 2, 3]} />
+      {children}
     </div>
   );
 }
@@ -65,10 +85,10 @@ function ToggleButton({ themeNumber }) {
   );
 }
 
-function Display() {
+function Display({ value }) {
   return (
     <div className='text-[hsl(0,0%,100%)] font-lage text-4xl font-bold w-[500px] bg-[#182034] h-24 rounded-lg px-6 flex items-center justify-end'>
-      <h1>399, 981</h1>
+      <h1>{value}</h1>
     </div>
   );
 }
@@ -78,7 +98,7 @@ const DataButtons = {
   OperationButtons: ['C', '+', '-', 'x'],
   AdditionalButtons: ['Reset', '='],
 };
-function Board() {
+function Board({ clear, displayNumber }) {
   return (
     <div
       style={{
@@ -98,7 +118,13 @@ function Board() {
       <div className='flex justify-center w-full'>
         <div className='grid grid-cols-3 gap-4 px-2'>
           {DataButtons.NumberedButtons.map((value, index) => (
-            <Button value={value} key={index} width='100px' />
+            <Button
+              value={value}
+              key={index}
+              width='100px'
+              clear={clear}
+              displayNumber={displayNumber}
+            />
           ))}
         </div>
         <div className='grid grid-cols-1 gap-4 px-2'>
@@ -109,6 +135,8 @@ function Board() {
               backgroundColor={index === 0 ? '#637097' : ''}
               color={index === 0 ? '#ffffff' : ''}
               width='100px'
+              clear={clear}
+              displayNumber={displayNumber}
             />
           ))}
         </div>
@@ -122,6 +150,8 @@ function Board() {
             backgroundColor={index === 0 ? '#637097' : '#d03f2f'}
             color='#ffffff'
             width='215px'
+            clear={clear}
+            displayNumber={displayNumber}
           />
         ))}
       </div>
@@ -129,10 +159,39 @@ function Board() {
   );
 }
 
-function Button({ value, backgroundColor, color, width }) {
+function Button({
+  value,
+  backgroundColor,
+  color,
+  width,
+  clear,
+  displayNumber,
+}) {
+  // let result = [];
+
+  // if (typeof value === 'number') {
+  //   result.push(value);
+  // }
+
+  // result.forEach((value) => {
+  //   console.log(value);
+  // });
+
+  const handleDisplay = (value) => {
+    if (value === 'C') {
+      clear();
+    }
+
+    if (typeof value === 'number') {
+      displayNumber(value);
+      console.log('Number: ' + value);
+    }
+  };
+
   return (
     <button
       style={{ backgroundColor: backgroundColor, color: color, width: width }}
+      onClick={() => handleDisplay(value)}
       className='flex items-center justify-center h-[60px] rounded-[6px] bg-[#eae3dc] font-lage font-bold text-[28px] border-b-[4px] border-opacity-20 border-black pt-2'
     >
       {value}
