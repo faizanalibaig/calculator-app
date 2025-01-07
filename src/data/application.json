@@ -1,3 +1,35 @@
 {
-  "title": "calc"
+  "title": "calc",
+  "color-schema": {
+    "theme-1": {
+      "background": "#3a4764",
+      "text": "#ffffff",
+      "button-primary": "#eae3dc",
+      "button-secondary": "#637097",
+      "button-danger": "#d03f2f",
+      "display-color": "#182034"
+    },
+    "theme-2": {
+      "background": "#e6e6e6",
+      "text": "#35352c",
+      "secondary-text": "#ffffff",
+      "screen-background": "#ededed",
+      "button-primary": "#eae3dc",
+      "button-secondary": "#377f86",
+      "toggle-background": "#d1cccc",
+      "key-shadow": "#a69d91",
+      "secondary-key-shadow": "#1b5f65",
+      "toggle": "#ca5502",
+      "button-danger": "#d03f2f",
+      "display-color": "#182034"
+    },
+    "theme-3": {
+      "background": "#3a4764",
+      "text": "#ffffff",
+      "button-primary": "#eae3dc",
+      "button-secondary": "#637097",
+      "button-danger": "#d03f2f",
+      "display-color": "#182034"
+    }
+  }
 }

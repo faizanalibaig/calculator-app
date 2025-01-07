@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Data from './data/application.json';
 
 const App = () => {
-  const [displayValue, setDisplayValue] = useState(3991);
+  const [displayValue, setDisplayValue] = useState(0);
 
   const handleClearDisplayValue = () => {
     setDisplayValue(0);
   };
 
-  const handleNumberClick = (number) => {
-    console.log('Number clicked');
-    if (displayValue === 0) {
+  const handleNumberClick = (number, flag = false) => {
+    if (!flag && !displayValue) {
+      setDisplayValue(number);
+    } else if (displayValue !== 0 && flag) {
       setDisplayValue(number);
     } else {
       setDisplayValue(`${displayValue}${number}`);
@@ -20,7 +21,7 @@ const App = () => {
   return (
     <div
       style={{
-        backgroundColor: 'hsl(222, 26%, 31%)',
+        backgroundColor: '#3a4764',
         width: '100vw',
         height: '100vh',
         display: 'flex',
@@ -37,6 +38,7 @@ const App = () => {
       <Board
         clear={handleClearDisplayValue}
         displayNumber={handleNumberClick}
+        data={displayValue}
       />
     </div>
   );
@@ -87,7 +89,7 @@ function ToggleButton({ themeNumber }) {
 
 function Display({ value }) {
   return (
-    <div className='text-[hsl(0,0%,100%)] font-lage text-4xl font-bold w-[500px] bg-[#182034] h-24 rounded-lg px-6 flex items-center justify-end'>
+    <div className='text-[#ffffff] font-lage text-4xl font-bold w-[500px] bg-[#182034] h-24 rounded-lg px-6 flex items-center justify-end'>
       <h1>{value}</h1>
     </div>
   );
@@ -98,7 +100,7 @@ const DataButtons = {
   OperationButtons: ['C', '+', '-', 'x'],
   AdditionalButtons: ['Reset', '='],
 };
-function Board({ clear, displayNumber }) {
+function Board({ clear, displayNumber, data }) {
   return (
     <div
       style={{
@@ -124,6 +126,7 @@ function Board({ clear, displayNumber }) {
               width='100px'
               clear={clear}
               displayNumber={displayNumber}
+              data={data}
             />
           ))}
         </div>
@@ -137,6 +140,7 @@ function Board({ clear, displayNumber }) {
               width='100px'
               clear={clear}
               displayNumber={displayNumber}
+              data={data}
             />
           ))}
         </div>
@@ -152,6 +156,7 @@ function Board({ clear, displayNumber }) {
             width='215px'
             clear={clear}
             displayNumber={displayNumber}
+            data={data}
           />
         ))}
       </div>
@@ -166,33 +171,26 @@ function Button({
   width,
   clear,
   displayNumber,
+  data,
 }) {
-  // let result = [];
-
-  // if (typeof value === 'number') {
-  //   result.push(value);
-  // }
-
-  // result.forEach((value) => {
-  //   console.log(value);
-  // });
-
   const handleDisplay = (value) => {
     if (value === 'C') {
       clear();
-    }
-
-    if (typeof value === 'number') {
+    } else if (['+', '-', 'x', '/'].includes(value)) {
+      clear();
+    } else if (!isNaN(value)) {
       displayNumber(value);
-      console.log('Number: ' + value);
     }
   };
 
   return (
     <button
-      style={{ backgroundColor: backgroundColor, color: color, width: width }}
+      style={{ backgroundColor, color, width }}
       onClick={() => handleDisplay(value)}
-      className='flex items-center justify-center h-[60px] rounded-[6px] bg-[#eae3dc] font-lage font-bold text-[28px] border-b-[4px] border-opacity-20 border-black pt-2'
+      className='flex items-center justify-center
+                 h-[60px] rounded-[6px] bg-[#eae3dc]
+                 font-large font-bold text-[28px]
+                 border-b-[4px] border-opacity-20 border-black pt-2'
     >
       {value}
     </button>
