@@ -1,20 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Data from './data/application.json';
 
 const App = () => {
-  const [displayValue, setDisplayValue] = useState(0);
+  const [displayValue, setDisplayValue] = useState('0');
+  const [operator, setOperator] = useState(null);
+  const [previousValue, setPreviousValue] = useState(null);
+  const [waitingForNewValue, setWaitingForNewValue] = useState(false);
 
-  const handleClearDisplayValue = () => {
-    setDisplayValue(0);
+  const handleButtonClick = (buttonValue) => {
+    if (buttonValue === 'C') {
+      setDisplayValue('0');
+      setOperator(null);
+      setPreviousValue(null);
+      setWaitingForNewValue(false);
+      return;
+    }
+
+    if (buttonValue === 'Reset') {
+      setDisplayValue('0');
+      setOperator(null);
+      setPreviousValue(null);
+      setWaitingForNewValue(false);
+      return;
+    }
+
+    if (buttonValue === '=') {
+      if (operator && previousValue !== null) {
+        const result = calculate(previousValue, displayValue, operator);
+        setDisplayValue(String(result));
+        setOperator(null);
+        setPreviousValue(null);
+        setWaitingForNewValue(true);
+      }
+      return;
+    }
+
+    if (['+', '-', 'x', '/'].includes(buttonValue)) {
+      if (operator && !waitingForNewValue) {
+        const result = calculate(previousValue, displayValue, operator);
+        setDisplayValue(String(result));
+        setPreviousValue(String(result));
+      } else {
+        setPreviousValue(displayValue);
+      }
+      setOperator(buttonValue);
+      setWaitingForNewValue(true);
+      return;
+    }
+
+    if (!isNaN(buttonValue) || buttonValue === '.') {
+      if (waitingForNewValue) {
+        if (buttonValue === '.') {
+          setDisplayValue('0.');
+        } else {
+          setDisplayValue(buttonValue.toString());
+        }
+        setWaitingForNewValue(false);
+      } else {
+        if (displayValue === '0' && buttonValue !== '.') {
+          setDisplayValue(buttonValue.toString());
+        } else {
+          setDisplayValue(displayValue + buttonValue.toString());
+        }
+      }
+    }
   };
 
-  const handleNumberClick = (number, flag = false) => {
-    if (!flag && !displayValue) {
-      setDisplayValue(number);
-    } else if (displayValue !== 0 && flag) {
-      setDisplayValue(number);
-    } else {
-      setDisplayValue(`${displayValue}${number}`);
+  const calculate = (prev, current, op) => {
+    const prevNum = parseFloat(prev);
+    const currentNum = parseFloat(current);
+    if (isNaN(prevNum) || isNaN(currentNum)) return '0';
+
+    switch (op) {
+      case '+':
+        return prevNum + currentNum;
+      case '-':
+        return prevNum - currentNum;
+      case 'x':
+        return prevNum * currentNum;
+      case '/':
+        if (currentNum === 0) return 'Error';
+        return prevNum / currentNum;
+      default:
+        return currentNum;
     }
   };
 
@@ -35,11 +103,7 @@ const App = () => {
         <ToggleButton themeNumber={[1, 2, 3]} />
       </CalculatorHeader>
       <Display value={displayValue} />
-      <Board
-        clear={handleClearDisplayValue}
-        displayNumber={handleNumberClick}
-        data={displayValue}
-      />
+      <Board onButtonClick={handleButtonClick} />
     </div>
   );
 };
@@ -55,10 +119,6 @@ function CalculatorHeader({ children }) {
 
 function ToggleButton({ themeNumber }) {
   const [theme, setTheme] = useState(0);
-
-  const handleToggle = (index) => {
-    setTheme(index);
-  };
 
   return (
     <section className='flex items-center gap-6 h-full relative font-semibold'>
@@ -78,7 +138,7 @@ function ToggleButton({ themeNumber }) {
               className={`h-full w-[30%] bg-[#d03f2f] rounded-full px-2 cursor-pointer ${
                 theme === index ? '' : 'opacity-0'
               }`}
-              onClick={() => handleToggle(index)}
+              onClick={() => setTheme(index)}
             />
           ))}
         </div>
@@ -100,7 +160,8 @@ const DataButtons = {
   OperationButtons: ['C', '+', '-', 'x'],
   AdditionalButtons: ['Reset', '='],
 };
-function Board({ clear, displayNumber, data }) {
+
+function Board({ onButtonClick }) {
   return (
     <div
       style={{
@@ -124,9 +185,7 @@ function Board({ clear, displayNumber, data }) {
               value={value}
               key={index}
               width='100px'
-              clear={clear}
-              displayNumber={displayNumber}
-              data={data}
+              onButtonClick={onButtonClick}
             />
           ))}
         </div>
@@ -138,9 +197,7 @@ function Board({ clear, displayNumber, data }) {
               backgroundColor={index === 0 ? '#637097' : ''}
               color={index === 0 ? '#ffffff' : ''}
               width='100px'
-              clear={clear}
-              displayNumber={displayNumber}
-              data={data}
+              onButtonClick={onButtonClick}
             />
           ))}
         </div>
@@ -154,9 +211,7 @@ function Board({ clear, displayNumber, data }) {
             backgroundColor={index === 0 ? '#637097' : '#d03f2f'}
             color='#ffffff'
             width='215px'
-            clear={clear}
-            displayNumber={displayNumber}
-            data={data}
+            onButtonClick={onButtonClick}
           />
         ))}
       </div>
@@ -164,29 +219,11 @@ function Board({ clear, displayNumber, data }) {
   );
 }
 
-function Button({
-  value,
-  backgroundColor,
-  color,
-  width,
-  clear,
-  displayNumber,
-  data,
-}) {
-  const handleDisplay = (value) => {
-    if (value === 'C') {
-      clear();
-    } else if (['+', '-', 'x', '/'].includes(value)) {
-      clear();
-    } else if (!isNaN(value)) {
-      displayNumber(value);
-    }
-  };
-
+function Button({ value, backgroundColor, color, width, onButtonClick }) {
   return (
     <button
       style={{ backgroundColor, color, width }}
-      onClick={() => handleDisplay(value)}
+      onClick={() => onButtonClick(value)}
       className='flex items-center justify-center
                  h-[60px] rounded-[6px] bg-[#eae3dc]
                  font-large font-bold text-[28px]
